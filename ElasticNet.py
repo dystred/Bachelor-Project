@@ -137,6 +137,20 @@ l1 = np.linspace(0.00000000000000001,0.1,10)
 
 Model_EN, MSE_EN, besten, Alpha_EN, Coefs_EN = Opt_Hyp_Elastic_Net(X_train = dTrain_X, X_tune = dVal_X, y_train = dTrain_Y[:,0], y_tune = dVal_Y[:,0], lambd = lambd[:], weight = l1)
 
+# The Final Model
+lambd = 0.0010101
+l1 = 0.4055
+
+mse_en = mean_squared_error(dVal_Y, Model_EN.predict(dVal_X))
+PTest_Y_EN = Model_EN.predict(dTest_X)
+
+PTest_Y_EN = pd.DataFrame(PTest_Y_EN)
+
+with open('PTest_Y_EN.csv','w') as tf:
+    tf.write(PTest_Y_EN.to_csv())
+
+MSE_EN_Test = mean_squared_error(dTest_Y,PTest_Y_EN)
+
 # The coefficients for the Elastic Net is plotted
 
 series = range(94)
@@ -145,5 +159,41 @@ plt.bar(x = series, height = Coefs_EN[0])
 plt.xlabel('Explanaotry Variables')
 plt.ylabel('Coefficient, scaled by 1e-9')
 plt.suptitle('Elastic Net, Coefficients for all Explanatory Variables')
+plt.grid()
+plt.show()
+
+# The coefficients for the Lasso model is plotted.
+
+lambd_L = np.linspace(0.0000000000001,0.0015) # Used for the plot
+
+Model_L, MSE_L, Alpha_L, Coefs_L, bestl = Opt_Hyp_Lasso(
+    X_train = dTrain_X, X_tune = dVal_X, y_train = dTrain_Y[:,0], y_tune = dVal_Y[:,0], lambd = lambd_L)
+
+series = lambd_L
+
+plt.plot(series, Coefs_L)
+plt.rcParams["font.family"] = "serif"
+plt.xlabel('Value of the L1 Penalty')
+plt.ylabel('Lasso Coefficient')
+#plt.suptitle('Lasso, Coefficients for all Explanatory Variables given L1 Penalty')
+plt.grid()
+plt.show()
+
+# The coefficients for the ridge model is plotted.
+
+lambd_R = np.linspace(0.00000001,450000,200) #Used for the plot
+
+Model_R, MSE_R, Alpha_R, Coefs_R, bestr = Opt_Hyp_Ridge(
+    X_train = dTrain_X, X_tune = dVal_X, y_train = dTrain_Y, y_tune = dVal_Y, lambd = lambd_R)
+
+series = lambd_R
+
+# When doing the plot below change the values of Lambd to be np.linspace(0,4400000), this gives the plot shown in the project.
+
+plt.plot(series, Coefs_R)
+plt.xlabel('Value of the L2 Penalty')
+plt.rcParams["font.family"] = "serif"
+plt.ylabel('Ridge Coefficient')
+#plt.suptitle('Ridge, Coefficients for all Explanatory Variables given L2 Penalty')
 plt.grid()
 plt.show()
